@@ -1,0 +1,94 @@
+@model WeekendCheckViewModel
+@{
+    ViewData["Title"] = "Trang chủ - Kiểm Tra Ngày Cuối Tuần";
+}
+
+<div class="container my-4">
+    <!-- Main Hero Card -->
+    <div class="hero-glass-card text-center mb-5">
+        <div class="mb-3">
+            <span class="status-badge @(Model.IsWeekend ? "weekend" : "weekday")">
+                <span class="badge-pulse"></span>
+                @if (Model.IsWeekend)
+                {
+                    <span>Cuối Tuần Đã Đến! 🎉</span>
+                }
+                else
+                {
+                    <span>Ngày Trong Tuần 💼</span>
+                }
+            </span>
+        </div>
+
+        <!-- Headline Message (Matching Exact Format) -->
+        <h1 class="display-4 fw-extrabold my-3 text-gradient">
+            @Model.Message
+        </h1>
+
+        <div class="date-highlight">
+            @Model.SelectedDate.ToString("dd/MM/yyyy")
+        </div>
+        <p class="date-subtext mb-4">
+            Hôm nay là <strong>@Model.DayOfWeekVietnamese</strong>
+        </p>
+
+        <!-- Countdown / Info Banner -->
+        <div class="motive-box d-inline-block text-start mb-2">
+            @if (Model.IsWeekend)
+            {
+                <span class="text-success fw-bold"><i class="fa-solid fa-umbrella-beach me-2"></i>Hãy tận hưởng khoảng thời gian thư giãn tuyệt vời của cuối tuần!</span>
+            }
+            else
+            {
+                <span class="text-info fw-bold"><i class="fa-solid fa-hourglass-half me-2"></i>Còn <strong>@Model.DaysUntilWeekend</strong> ngày nữa là tới thứ Bảy (Cuối tuần). Cố gắng lên!</span>
+            }
+        </div>
+    </div>
+
+    <!-- Interactive Grid: Visualizing Current Week -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold m-0"><i class="fa-solid fa-calendar-days me-2 text-accent"></i>Lịch Trong Tuần</h4>
+            <span class="badge bg-secondary bg-opacity-25 text-secondary px-3 py-2 rounded-pill">Tuần Hiện Tại</span>
+        </div>
+
+        <div class="week-grid">
+            @foreach (var day in Model.WeekDays)
+            {
+                <a asp-controller="Home" asp-action="CheckWeekend" asp-route-date="@day.Date.ToString("yyyy-MM-dd")" 
+                   class="day-card @(day.IsToday ? "is-today" : "") @(day.IsWeekend ? "is-weekend" : "") @(day.IsSelected ? "is-selected" : "")">
+                    <div class="day-name">@day.DayName</div>
+                    <div class="day-number">@day.DayNumber</div>
+                    <div>
+                        @if (day.IsWeekend)
+                        {
+                            <span class="day-badge-sm weekend">Cuối tuần</span>
+                        }
+                        else
+                        {
+                            <span class="day-badge-sm weekday">Trong tuần</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Quick Date Checker Form -->
+    <div class="picker-glass-card">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h4 class="fw-bold mb-2"><i class="fa-solid fa-magnifying-glass me-2 text-primary"></i>Kiểm Tra Ngày Khác</h4>
+                <p class="text-secondary mb-0">Chọn bất kỳ ngày nào trong lịch để kiểm tra xem đó có phải là ngày cuối tuần không.</p>
+            </div>
+            <div class="col-lg-6">
+                <form asp-controller="Home" asp-action="CheckWeekend" method="get" class="d-flex flex-column flex-sm-row gap-2">
+                    <input type="date" name="date" class="form-control custom-input flex-grow-1" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" required />
+                    <button type="submit" class="btn btn-gradient text-nowrap">
+                        <i class="fa-solid fa-check me-2"></i>Kiểm Tra Ngay
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

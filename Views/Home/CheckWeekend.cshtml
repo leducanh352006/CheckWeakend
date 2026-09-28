@@ -1,0 +1,92 @@
+@model WeekendCheckViewModel
+@{
+    ViewData["Title"] = "Kiểm Tra Ngày Cuối Tuần";
+    var todayStr = DateTime.Today.ToString("yyyy-MM-dd");
+    var tomorrowStr = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+    
+    // Calculate next Saturday
+    int daysUntilSat = ((int)DayOfWeek.Saturday - (int)DateTime.Today.DayOfWeek + 7) % 7;
+    if (daysUntilSat == 0) daysUntilSat = 7;
+    var nextSaturdayStr = DateTime.Today.AddDays(daysUntilSat).ToString("yyyy-MM-dd");
+}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header Section -->
+            <div class="text-center mb-4">
+                <h1 class="fw-extrabold text-gradient mb-2">
+                    <i class="fa-solid fa-calendar-check me-2"></i>Kiểm Tra Ngày Tùy Chọn
+                </h1>
+                <p class="text-secondary">Nhập hoặc chọn một ngày để xác định trạng thái cuối tuần</p>
+            </div>
+
+            <!-- Date Selection Card -->
+            <div class="hero-glass-card mb-4">
+                <form asp-controller="Home" asp-action="CheckWeekend" method="get">
+                    <div class="mb-4">
+                        <label for="dateInput" class="form-label fw-bold text-secondary mb-2">Chọn ngày cần kiểm tra:</label>
+                        <div class="input-group">
+                            <input type="date" id="dateInput" name="date" class="form-control custom-input form-control-lg" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" required />
+                            <button type="submit" class="btn btn-gradient px-4">
+                                <i class="fa-solid fa-magnifying-glass me-2"></i>Kiểm tra
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Presets buttons -->
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="text-muted align-self-center me-2"><small>Phím tắt chọn nhanh:</small></span>
+                        <a asp-controller="Home" asp-action="CheckWeekend" asp-route-date="@todayStr" class="btn btn-outline-glass btn-sm">
+                            <i class="fa-solid fa-clock me-1"></i>Hôm nay
+                        </a>
+                        <a asp-controller="Home" asp-action="CheckWeekend" asp-route-date="@tomorrowStr" class="btn btn-outline-glass btn-sm">
+                            <i class="fa-solid fa-arrow-right me-1"></i>Ngày mai
+                        </a>
+                        <a asp-controller="Home" asp-action="CheckWeekend" asp-route-date="@nextSaturdayStr" class="btn btn-outline-glass btn-sm">
+                            <i class="fa-solid fa-star me-1"></i>Thứ 7 tới
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Result Card -->
+            <div class="hero-glass-card text-center">
+                <div class="text-uppercase text-secondary fw-semibold tracking-wider mb-2">
+                    Kết quả kiểm tra ngày @Model.SelectedDate.ToString("dd/MM/yyyy") (@Model.DayOfWeekVietnamese)
+                </div>
+
+                <div class="my-4">
+                    <div class="status-badge @(Model.IsWeekend ? "weekend" : "weekday")">
+                        <span class="badge-pulse"></span>
+                        @if (Model.IsWeekend)
+                        {
+                            <span>Today is weekend! 🎉</span>
+                        }
+                        else
+                        {
+                            <span>today isn't weakend 💼</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="p-3 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 d-inline-block">
+                    @if (Model.IsWeekend)
+                    {
+                        <p class="m-0 text-success fw-medium">
+                            <i class="fa-solid fa-circle-check me-2"></i>
+                            Ngày <strong>@Model.SelectedDate.ToString("dd/MM/yyyy")</strong> rơi vào <strong>@Model.DayOfWeekVietnamese</strong> (Cuối tuần). Bạn có thể nghỉ ngơi!
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="m-0 text-info fw-medium">
+                            <i class="fa-solid fa-briefcase me-2"></i>
+                            Ngày <strong>@Model.SelectedDate.ToString("dd/MM/yyyy")</strong> rơi vào <strong>@Model.DayOfWeekVietnamese</strong> (Ngày đi học / đi làm).
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
